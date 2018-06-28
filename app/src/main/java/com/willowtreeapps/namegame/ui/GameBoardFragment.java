@@ -21,34 +21,49 @@ import com.willowtreeapps.namegame.network.api.model.Profiles;
 import com.willowtreeapps.namegame.util.CircleBorderTransform;
 import com.willowtreeapps.namegame.util.Ui;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class NameGameFragment extends Fragment {
+public class GameBoardFragment extends Fragment implements IGameBoardContract.View {
 
     private static final Interpolator OVERSHOOT = new OvershootInterpolator();
+    private static final String PREFIX_HTTPS = "https:";
 
     @Inject
     ListRandomizer listRandomizer;
     @Inject
     Picasso picasso;
+    @Inject
+    GameBoardPresenter presenter;
 
     private TextView title;
     private ViewGroup container;
-    private List<ImageView> faces = new ArrayList<>(5);
+    private List<ImageView> faces = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NameGameApplication.get(getActivity()).component().inject(this);
+
+        injectNameGamePresenter();
+        presenter.restoreState(savedInstanceState);
+        presenter.attachView(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.name_game_fragment, container, false);
+    }
+
+    private void injectNameGamePresenter() {
+        DaggerIGameBoardComponent.builder()
+                .iNameGameComponent(((NameGameApplication) getActivity().getApplication()).component())
+                .build()
+                .inject(this);
     }
 
     @Override
@@ -68,20 +83,18 @@ public class NameGameFragment extends Fragment {
             face.setScaleX(0);
             face.setScaleY(0);
         }
-
     }
 
     /**
      * A method for setting the images from people into the imageviews
      */
-    private void setImages(List<ImageView> faces, Profiles profiles) {
-        List<Person> people = profiles.getPeople();
+    private void setImages(List<ImageView> faces, List<Person> people) {
         int imageSize = (int) Ui.convertDpToPixel(100, getContext());
         int n = faces.size();
 
         for (int i = 0; i < n; i++) {
             ImageView face = faces.get(i);
-            picasso.load(people.get(i).getHeadshot().getUrl())
+            picasso.load(PREFIX_HTTPS + people.get(i).getHeadshot().getUrl())
                     .placeholder(R.drawable.ic_face_white_48dp)
                     .resize(imageSize, imageSize)
                     .transform(new CircleBorderTransform())
@@ -110,4 +123,48 @@ public class NameGameFragment extends Fragment {
         //TODO evaluate whether it was the right person and make an action based on that
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        presenter.saveState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        presenter.start();
+    }
+
+    @Override
+    public void onStop() {
+        presenter.stop();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        presenter.detachView();
+        super.onDestroy();
+    }
+
+    @Override
+    public void showPeople(@NotNull ArrayList<Person> people) {
+        setImages(faces, people);
+        animateFacesIn();
+    }
+
+    @Override
+    public void showIncorrectAnswer(@NotNull View view, @NotNull Person person) {
+
+    }
+
+    @Override
+    public void showCorrectAnswer(@NotNull View view, @NotNull Person person) {
+
+    }
+
+    @Override
+    public void showPeopleLoadError(int message) {
+
+    }
 }

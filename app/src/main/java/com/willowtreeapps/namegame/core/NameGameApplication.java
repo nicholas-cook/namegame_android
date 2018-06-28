@@ -1,18 +1,12 @@
 package com.willowtreeapps.namegame.core;
 
 import android.app.Application;
-import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.willowtreeapps.namegame.network.NetworkModule;
 
 public class NameGameApplication extends Application {
 
-    private ApplicationComponent component;
-
-    public static NameGameApplication get(@NonNull Context context) {
-        return (NameGameApplication) context.getApplicationContext();
-    }
+    private INameGameComponent component;
 
     @Override
     public void onCreate() {
@@ -20,12 +14,12 @@ public class NameGameApplication extends Application {
         component = buildComponent();
     }
 
-    public ApplicationComponent component() {
+    public INameGameComponent component() {
         return component;
     }
 
-    protected ApplicationComponent buildComponent() {
-        return DaggerApplicationComponent.builder()
+    protected INameGameComponent buildComponent() {
+        return DaggerINameGameComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .networkModule(new NetworkModule("https://willowtreeapps.com/"))
                 .build();
