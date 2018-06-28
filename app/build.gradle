@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 27
@@ -39,6 +41,7 @@ dependencies {
     implementation 'org.glassfish:javax.annotation:3.2-b06'
     implementation 'com.google.dagger:dagger:2.13'
     implementation 'com.google.code.gson:gson:2.8.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 //noinspection GroovyAssignabilityCheck
@@ -47,4 +50,7 @@ configurations.all {
         // Force our version of support-annotations, we have a conflict between app and test dependency resolution.
         force "com.android.support:support-annotations:23.2.0"
     }
+}
+repositories {
+    mavenCentral()
 }
