@@ -3,9 +3,8 @@ package com.willowtreeapps.namegame;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.willowtreeapps.namegame.network.api.NameGameApi;
-import com.willowtreeapps.namegame.network.api.ProfilesRepository;
+import com.willowtreeapps.namegame.network.api.PeopleRepository;
 import com.willowtreeapps.namegame.network.api.model.Person;
-import com.willowtreeapps.namegame.network.api.model.Profiles;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,8 +40,8 @@ public class ProfilesRepositoryTest {
     public void should_throw_for_multiple_registration_of_one_listener() throws Exception {
         NameGameApi api = mock(NameGameApi.class);
         when(api.getProfiles()).thenReturn(SynchronousCallAdapter.forSuccess(PROFILES));
-        ProfilesRepository repo = new ProfilesRepository(api);
-        ProfilesRepository.Listener listener = mock(ProfilesRepository.Listener.class);
+        PeopleRepository repo = new PeopleRepository(api);
+        PeopleRepository.Listener listener = mock(PeopleRepository.Listener.class);
         repo.register(listener);
         thrown.expect(IllegalStateException.class);
         repo.register(listener);
@@ -52,10 +51,10 @@ public class ProfilesRepositoryTest {
     public void should_allow_registration_of_multiple_listeners() throws Exception {
         NameGameApi api = mock(NameGameApi.class);
         when(api.getProfiles()).thenReturn(SynchronousCallAdapter.forSuccess(PROFILES));
-        ProfilesRepository repo = new ProfilesRepository(api);
-        ProfilesRepository.Listener one = mock(ProfilesRepository.Listener.class);
-        ProfilesRepository.Listener two = mock(ProfilesRepository.Listener.class);
-        ProfilesRepository.Listener three = mock(ProfilesRepository.Listener.class);
+        PeopleRepository repo = new PeopleRepository(api);
+        PeopleRepository.Listener one = mock(PeopleRepository.Listener.class);
+        PeopleRepository.Listener two = mock(PeopleRepository.Listener.class);
+        PeopleRepository.Listener three = mock(PeopleRepository.Listener.class);
         repo.register(one);
         repo.register(two);
         repo.register(three);
@@ -65,8 +64,8 @@ public class ProfilesRepositoryTest {
     public void should_notify_new_registrants_on_success() throws Exception {
         NameGameApi api = mock(NameGameApi.class);
         when(api.getProfiles()).thenReturn(SynchronousCallAdapter.forSuccess(PROFILES));
-        ProfilesRepository repo = new ProfilesRepository(api);
-        ProfilesRepository.Listener listener = mock(ProfilesRepository.Listener.class);
+        PeopleRepository repo = new PeopleRepository(api);
+        PeopleRepository.Listener listener = mock(PeopleRepository.Listener.class);
         repo.register(listener);
         verify(listener, times(1)).onLoadFinished(any(Profiles.class));
     }
@@ -75,8 +74,8 @@ public class ProfilesRepositoryTest {
     public void should_not_notify_new_registrants_on_load_failure() throws Exception {
         NameGameApi api = mock(NameGameApi.class);
         when(api.getProfiles()).thenReturn(SynchronousCallAdapter.<Profiles>forError());
-        ProfilesRepository repo = new ProfilesRepository(api);
-        ProfilesRepository.Listener listener = mock(ProfilesRepository.Listener.class);
+        PeopleRepository repo = new PeopleRepository(api);
+        PeopleRepository.Listener listener = mock(PeopleRepository.Listener.class);
         repo.register(listener);
         verify(listener, times(0)).onLoadFinished(any(Profiles.class));
     }
@@ -85,8 +84,8 @@ public class ProfilesRepositoryTest {
     public void should_notify_existing_registrants_on_load_failure() throws Exception {
         NameGameApi api = mock(NameGameApi.class);
         when(api.getProfiles()).thenReturn(SynchronousCallAdapter.<Profiles>forError());
-        ProfilesRepository.Listener listener = mock(ProfilesRepository.Listener.class);
-        ProfilesRepository repo = new ProfilesRepository(api, listener);
+        PeopleRepository.Listener listener = mock(PeopleRepository.Listener.class);
+        PeopleRepository repo = new PeopleRepository(api, listener);
         verify(listener, times(1)).onError(any(IOException.class));
     }
 

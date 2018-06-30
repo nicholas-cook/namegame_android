@@ -2,7 +2,7 @@ package com.willowtreeapps.namegame.core
 
 import com.squareup.picasso.Picasso
 import com.willowtreeapps.namegame.network.NetworkModule
-import com.willowtreeapps.namegame.network.api.ProfilesRepository
+import com.willowtreeapps.namegame.network.api.PeopleRepository
 import dagger.Component
 import javax.inject.Singleton
 
@@ -14,5 +14,5 @@ interface INameGameComponent {
 
     fun getPicasso(): Picasso
 
-    fun getProfilesRepository(): ProfilesRepository
+    fun getProfilesRepository(): PeopleRepository
 }

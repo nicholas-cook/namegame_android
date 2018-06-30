@@ -1,17 +1,16 @@
 package com.willowtreeapps.namegame.ui
 
 import android.os.Bundle
-import android.view.View
 import com.willowtreeapps.namegame.R
 import com.willowtreeapps.namegame.core.ListRandomizer
-import com.willowtreeapps.namegame.network.api.ProfilesRepository
+import com.willowtreeapps.namegame.network.api.PeopleRepository
 import com.willowtreeapps.namegame.network.api.model.Person
 import com.willowtreeapps.namegame.util.IBaseView
 import javax.inject.Inject
 
 class GameBoardPresenter
 @Inject constructor(
-    private val profilesRepository: ProfilesRepository,
+    private val peopleRepository: PeopleRepository,
     private val listRandomizer: ListRandomizer
 ) : IGameBoardContract.Presenter {
 
@@ -24,7 +23,7 @@ class GameBoardPresenter
 
     private var stateRestored = false
 
-    private val peopleListener: ProfilesRepository.Listener = object : ProfilesRepository.Listener {
+    private val peopleListener: PeopleRepository.Listener = object : PeopleRepository.Listener {
         override fun onLoadFinished(people: MutableList<Person>) {
             allPeople.apply {
                 clear()
@@ -59,11 +58,11 @@ class GameBoardPresenter
     }
 
     override fun start() {
-        profilesRepository.register(peopleListener)
+        peopleRepository.register(peopleListener)
     }
 
     override fun stop() {
-        profilesRepository.unregister(peopleListener)
+        peopleRepository.unregister(peopleListener)
     }
 
     override fun saveState(outState: Bundle) {

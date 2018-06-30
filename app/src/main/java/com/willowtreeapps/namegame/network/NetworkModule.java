@@ -9,7 +9,7 @@ import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 import com.willowtreeapps.namegame.BuildConfig;
 import com.willowtreeapps.namegame.network.api.NameGameApi;
-import com.willowtreeapps.namegame.network.api.ProfilesRepository;
+import com.willowtreeapps.namegame.network.api.PeopleRepository;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -81,8 +81,8 @@ public class NetworkModule {
     }
 
     @Provides @NonNull @Singleton
-    public ProfilesRepository providePersonRepository(@NonNull NameGameApi api) {
-        return new ProfilesRepository(api);
+    public PeopleRepository providePersonRepository(@NonNull NameGameApi api) {
+        return new PeopleRepository(api);
     }
 
     @Provides @NonNull @Singleton

@@ -1,6 +1,5 @@
 package com.willowtreeapps.namegame.network.api;
 
-import android.accounts.NetworkErrorException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -15,7 +14,7 @@ import retrofit2.Callback;
 import retrofit2.HttpException;
 import retrofit2.Response;
 
-public class ProfilesRepository {
+public class PeopleRepository {
 
     @NonNull
     private final NameGameApi api;
@@ -26,7 +25,7 @@ public class ProfilesRepository {
     @Nullable
     private Throwable error;
 
-    public ProfilesRepository(@NonNull NameGameApi api, Listener... listeners) {
+    public PeopleRepository(@NonNull NameGameApi api, Listener... listeners) {
         this.api = api;
         if (listeners != null) {
             this.listeners = new ArrayList<>(Arrays.asList(listeners));
@@ -61,7 +60,8 @@ public class ProfilesRepository {
     }
 
     public void register(@NonNull Listener listener) {
-        if (listeners.contains(listener)) throw new IllegalStateException("Listener is already registered.");
+        if (listeners.contains(listener))
+            throw new IllegalStateException("Listener is already registered.");
         listeners.add(listener);
         if (people != null) {
             listener.onLoadFinished(people);
