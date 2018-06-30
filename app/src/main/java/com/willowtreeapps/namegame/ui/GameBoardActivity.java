@@ -15,7 +15,11 @@ public class GameBoardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.name_game_activity);
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, new GameBoardFragment(), FRAG_TAG).commit();
+        GameBoardFragment fragment = (GameBoardFragment) getSupportFragmentManager().findFragmentByTag(FRAG_TAG);
+        if (fragment == null) {
+            fragment = new GameBoardFragment();
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment, FRAG_TAG).commit();
     }
 
 }

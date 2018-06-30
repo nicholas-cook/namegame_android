@@ -3,6 +3,8 @@ package com.willowtreeapps.namegame.ui;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +19,6 @@ import com.willowtreeapps.namegame.R;
 import com.willowtreeapps.namegame.core.ListRandomizer;
 import com.willowtreeapps.namegame.core.NameGameApplication;
 import com.willowtreeapps.namegame.network.api.model.Person;
-import com.willowtreeapps.namegame.network.api.model.Profiles;
 import com.willowtreeapps.namegame.util.CircleBorderTransform;
 import com.willowtreeapps.namegame.util.Ui;
 
@@ -49,14 +50,14 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
         super.onCreate(savedInstanceState);
 
         injectNameGamePresenter();
-        presenter.restoreState(savedInstanceState);
-        presenter.attachView(this);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.name_game_fragment, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.name_game_fragment, container, false);
+        presenter.attachView(this);
+        return rootView;
     }
 
     private void injectNameGamePresenter() {
@@ -67,9 +68,9 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        title = (TextView) view.findViewById(R.id.title);
-        container = (ViewGroup) view.findViewById(R.id.face_container);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        title = view.findViewById(R.id.title);
+        container = view.findViewById(R.id.face_container);
 
         //Hide the views until data loads
         title.setAlpha(0);
@@ -83,6 +84,7 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
             face.setScaleX(0);
             face.setScaleY(0);
         }
+        presenter.restoreState(savedInstanceState);
     }
 
     /**
@@ -148,7 +150,12 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
     }
 
     @Override
-    public void showPeople(@NotNull ArrayList<Person> people) {
+    public void showPeople(@NotNull ArrayList<Person> people, @NonNull String fullName) {
+        if (fullName.isEmpty()) {
+            title.setText(getString(R.string.question_no_name));
+        } else {
+            title.setText(getString(R.string.question, fullName));
+        }
         setImages(faces, people);
         animateFacesIn();
     }
@@ -164,7 +171,7 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
     }
 
     @Override
-    public void showPeopleLoadError(int message) {
-
+    public void showPeopleLoadError(@StringRes int message) {
+        Snackbar.make(container, message, Snackbar.LENGTH_LONG).show();
     }
 }

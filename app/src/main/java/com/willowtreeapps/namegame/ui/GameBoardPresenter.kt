@@ -17,26 +17,28 @@ class GameBoardPresenter
 
     private var view: IGameBoardContract.View? = null
 
-    private val listener: ProfilesRepository.Listener = object : ProfilesRepository.Listener {
+    private val allPeople = ArrayList<Person>()
+    private val currentPeople = ArrayList<Person>()
+    private val chosenPeople = ArrayList<Person>()
+    private var correctPerson: Person? = null
+
+    private var stateRestored = false
+
+    private val peopleListener: ProfilesRepository.Listener = object : ProfilesRepository.Listener {
         override fun onLoadFinished(people: MutableList<Person>) {
             allPeople.apply {
                 clear()
                 addAll(people)
             }
-            if (correctPerson == null) {
-                handleNewBoard()
+            if (!stateRestored) {
+                setUpNewBoard()
             }
         }
 
         override fun onError(error: Throwable) {
-            view?.showPeopleLoadError(R.string.app_name)
+            view?.showPeopleLoadError(R.string.people_load_error)
         }
     }
-
-    private val allPeople = ArrayList<Person>()
-    private val currentPeople = ArrayList<Person>()
-    private val chosenPeople = ArrayList<Person>()
-    private var correctPerson: Person? = null
 
     override fun attachView(view: IBaseView) {
         this.view = view as IGameBoardContract.View
@@ -55,11 +57,11 @@ class GameBoardPresenter
     }
 
     override fun start() {
-        profilesRepository.register(listener)
+        profilesRepository.register(peopleListener)
     }
 
     override fun stop() {
-        profilesRepository.unregister(listener)
+        profilesRepository.unregister(peopleListener)
     }
 
     override fun saveState(outState: Bundle) {
@@ -81,17 +83,33 @@ class GameBoardPresenter
                 addAll(savedInstanceState.getParcelableArrayList(EXTRA_CHOSEN_PEOPLE))
             }
             correctPerson = savedInstanceState.getParcelable(EXTRA_CORRECT_PERSON)
+            if (!currentPeople.isEmpty()) {
+                stateRestored = true
+                showBoard()
+            }
         }
     }
 
-    private fun handleNewBoard() {
+    private fun setUpNewBoard() {
         currentPeople.apply {
             clear()
             addAll(listRandomizer.pickN(allPeople, MAX_PEOPLE))
         }
         chosenPeople.clear()
-        correctPerson = currentPeople.first()
-        view?.showPeople(currentPeople)
+        correctPerson = listRandomizer.pickOne(allPeople)
+        showBoard()
+    }
+
+    private fun showBoard() {
+        var fullName: String? = ""
+        if (!correctPerson?.firstName.isNullOrBlank() && !correctPerson?.lastName.isNullOrBlank()) {
+            fullName = correctPerson?.firstName?.plus(" ")?.plus(correctPerson?.lastName)
+        } else if (!correctPerson?.firstName.isNullOrBlank()) {
+            fullName = correctPerson?.firstName
+        } else if (!correctPerson?.lastName.isNullOrBlank()) {
+            fullName = correctPerson?.lastName
+        }
+        view?.showPeople(currentPeople, fullName ?: "")
     }
 
     companion object {

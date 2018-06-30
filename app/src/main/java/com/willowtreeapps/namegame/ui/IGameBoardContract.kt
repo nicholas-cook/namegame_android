@@ -8,7 +8,7 @@ import com.willowtreeapps.namegame.util.IBaseView
 interface IGameBoardContract {
 
     interface View : IBaseView {
-        fun showPeople(people: ArrayList<Person>)
+        fun showPeople(people: ArrayList<Person>, fullName: String)
 
         fun showIncorrectAnswer(view: android.view.View, person: Person)
 
