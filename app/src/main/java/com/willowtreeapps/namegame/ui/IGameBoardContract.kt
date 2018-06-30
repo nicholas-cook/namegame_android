@@ -10,14 +10,16 @@ interface IGameBoardContract {
     interface View : IBaseView {
         fun showPeople(people: ArrayList<Person>, fullName: String)
 
-        fun showIncorrectAnswer(view: android.view.View, person: Person)
+        fun showIncorrectAnswer(correctPerson: Person)
 
-        fun showCorrectAnswer(view: android.view.View, person: Person)
+        fun showCorrectAnswer(correctPerson: Person)
 
         fun showPeopleLoadError(@StringRes message: Int)
     }
 
     interface Presenter : IBasePresenter {
-        fun onPictureClicked(view: android.view.View, person: Person)
+        fun onPictureClicked(person: Person)
+
+        fun setUpNewBoard()
     }
 }

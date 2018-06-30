@@ -48,11 +48,13 @@ class GameBoardPresenter
         view = null
     }
 
-    override fun onPictureClicked(view: View, person: Person) {
-        if (person.id == correctPerson?.id) {
-            this.view?.showCorrectAnswer(view, person)
-        } else {
-            this.view?.showIncorrectAnswer(view, person)
+    override fun onPictureClicked(person: Person) {
+        correctPerson?.let {
+            if (person.id == correctPerson?.id) {
+                this.view?.showCorrectAnswer(it)
+            } else {
+                this.view?.showIncorrectAnswer(it)
+            }
         }
     }
 
@@ -90,13 +92,13 @@ class GameBoardPresenter
         }
     }
 
-    private fun setUpNewBoard() {
+    override fun setUpNewBoard() {
         currentPeople.apply {
             clear()
             addAll(listRandomizer.pickN(allPeople, MAX_PEOPLE))
         }
         chosenPeople.clear()
-        correctPerson = listRandomizer.pickOne(allPeople)
+        correctPerson = listRandomizer.pickOne(currentPeople)
         showBoard()
     }
 

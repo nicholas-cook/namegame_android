@@ -4,4 +4,6 @@
     <string name="question_no_name">Who is this?</string>
     <string name="cdFace">A face</string>
     <string name="people_load_error">Unable to load people. Please try again later.</string>
+    <string name="correct">Correct!</string>
+    <string name="incorrect">Incorrect!</string>
 </resources>

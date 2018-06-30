@@ -1,11 +1,15 @@
 package com.willowtreeapps.namegame.ui;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,13 +46,13 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
     GameBoardPresenter presenter;
 
     private TextView title;
+    private TextView result;
     private ViewGroup container;
     private List<ImageView> faces = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         injectNameGamePresenter();
     }
 
@@ -70,10 +74,12 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         title = view.findViewById(R.id.title);
+        result = view.findViewById(R.id.correct_incorrect);
         container = view.findViewById(R.id.face_container);
 
         //Hide the views until data loads
         title.setAlpha(0);
+        result.setAlpha(0);
 
         int n = container.getChildCount();
         for (int i = 0; i < n; i++) {
@@ -91,12 +97,15 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
      * A method for setting the images from people into the imageviews
      */
     private void setImages(List<ImageView> faces, List<Person> people) {
-        int imageSize = (int) Ui.convertDpToPixel(100, getContext());
+        int imageSize = (int) Ui.convertDpToPixel(100, getActivity());
         int n = faces.size();
 
         for (int i = 0; i < n; i++) {
             ImageView face = faces.get(i);
-            picasso.load(PREFIX_HTTPS + people.get(i).getHeadshot().getUrl())
+            Person person = people.get(i);
+            face.setOnClickListener(getFaceClickListener(person));
+            face.setTag(person);
+            picasso.load(PREFIX_HTTPS + person.getHeadshot().getUrl())
                     .placeholder(R.drawable.ic_face_white_48dp)
                     .resize(imageSize, imageSize)
                     .transform(new CircleBorderTransform())
@@ -109,20 +118,11 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
      */
     private void animateFacesIn() {
         title.animate().alpha(1).start();
+        result.animate().alpha(0).start();
         for (int i = 0; i < faces.size(); i++) {
             ImageView face = faces.get(i);
             face.animate().scaleX(1).scaleY(1).setStartDelay(800 + 120 * i).setInterpolator(OVERSHOOT).start();
         }
-    }
-
-    /**
-     * A method to handle when a person is selected
-     *
-     * @param view   The view that was selected
-     * @param person The person that was selected
-     */
-    private void onPersonSelected(@NonNull View view, @NonNull Person person) {
-        //TODO evaluate whether it was the right person and make an action based on that
     }
 
     @Override
@@ -160,14 +160,62 @@ public class GameBoardFragment extends Fragment implements IGameBoardContract.Vi
         animateFacesIn();
     }
 
-    @Override
-    public void showIncorrectAnswer(@NotNull View view, @NotNull Person person) {
-
+    private View.OnClickListener getFaceClickListener(final Person person) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                presenter.onPictureClicked(person);
+            }
+        };
     }
 
     @Override
-    public void showCorrectAnswer(@NotNull View view, @NotNull Person person) {
+    public void showIncorrectAnswer(@NotNull Person correctPerson) {
+        result.animate().alpha(1).start();
+        result.setText(R.string.incorrect);
+        result.setTextColor(getColor(R.color.alphaRed));
+        hideIncorrectAnswers(correctPerson);
+    }
 
+    @Override
+    public void showCorrectAnswer(@NotNull Person correctPerson) {
+        result.animate().alpha(1).start();
+        result.setText(R.string.correct);
+        result.setTextColor(getColor(R.color.alphaGreen));
+        hideIncorrectAnswers(correctPerson);
+    }
+
+    @ColorInt
+    private int getColor(@ColorRes int colorRes) {
+        return ContextCompat.getColor(getActivity(), colorRes);
+    }
+
+    private void hideIncorrectAnswers(Person correctPerson) {
+        for (int i = 0; i < faces.size(); i++) {
+            ImageView face = faces.get(i);
+            face.setOnClickListener(null);
+            if (!((Person) face.getTag()).getId().equals(correctPerson.getId())) {
+                face.animate()
+                        .scaleX(0)
+                        .scaleY(0)
+                        .setStartDelay(800 + 120 * i)
+                        .setInterpolator(OVERSHOOT)
+                        .start();
+            } else {
+                face.animate()
+                        .scaleX(0)
+                        .scaleY(0)
+                        .setStartDelay(2500)
+                        .setInterpolator(OVERSHOOT)
+                        .start();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        presenter.setUpNewBoard();
+                    }
+                }, 3000);
+            }
+        }
     }
 
     @Override
