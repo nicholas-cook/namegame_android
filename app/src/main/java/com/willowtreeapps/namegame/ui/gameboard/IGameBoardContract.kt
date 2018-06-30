@@ -1,4 +1,4 @@
-package com.willowtreeapps.namegame.ui
+package com.willowtreeapps.namegame.ui.gameboard
 
 import android.support.annotation.StringRes
 import com.willowtreeapps.namegame.network.api.model.Person

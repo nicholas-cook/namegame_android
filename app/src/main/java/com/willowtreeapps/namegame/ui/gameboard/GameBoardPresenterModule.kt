@@ -1,4 +1,4 @@
-package com.willowtreeapps.namegame.ui
+package com.willowtreeapps.namegame.ui.gameboard
 
 import dagger.Module
 import dagger.Provides

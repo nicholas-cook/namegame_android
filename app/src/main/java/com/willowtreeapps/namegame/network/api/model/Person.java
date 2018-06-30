@@ -3,6 +3,7 @@ package com.willowtreeapps.namegame.network.api.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Person implements Parcelable {
@@ -42,7 +43,8 @@ public class Person implements Parcelable {
         this.firstName = in.readString();
         this.lastName = in.readString();
         this.headshot = in.readParcelable(Headshot.class.getClassLoader());
-        this.socialLinks = in.readArrayList(SocialLink.class.getClassLoader());
+        socialLinks = new ArrayList<>();
+        in.readList(socialLinks, SocialLink.class.getClassLoader());
     }
 
     public String getId() {

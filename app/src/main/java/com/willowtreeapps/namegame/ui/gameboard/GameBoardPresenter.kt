@@ -1,4 +1,4 @@
-package com.willowtreeapps.namegame.ui
+package com.willowtreeapps.namegame.ui.gameboard
 
 import android.os.Bundle
 import com.willowtreeapps.namegame.R
@@ -67,9 +67,12 @@ class GameBoardPresenter
 
     override fun saveState(outState: Bundle) {
         outState.apply {
-            putParcelableArrayList(EXTRA_CURRENT_PEOPLE, currentPeople)
-            putParcelableArrayList(EXTRA_CHOSEN_PEOPLE, chosenPeople)
-            putParcelable(EXTRA_CORRECT_PERSON, correctPerson)
+            putParcelableArrayList(
+                EXTRA_CURRENT_PEOPLE, currentPeople)
+            putParcelableArrayList(
+                EXTRA_CHOSEN_PEOPLE, chosenPeople)
+            putParcelable(
+                EXTRA_CORRECT_PERSON, correctPerson)
         }
     }
 
@@ -77,13 +80,16 @@ class GameBoardPresenter
         savedInstanceState?.let {
             currentPeople.apply {
                 clear()
-                addAll(savedInstanceState.getParcelableArrayList(EXTRA_CURRENT_PEOPLE))
+                addAll(savedInstanceState.getParcelableArrayList(
+                    EXTRA_CURRENT_PEOPLE))
             }
             chosenPeople.apply {
                 clear()
-                addAll(savedInstanceState.getParcelableArrayList(EXTRA_CHOSEN_PEOPLE))
+                addAll(savedInstanceState.getParcelableArrayList(
+                    EXTRA_CHOSEN_PEOPLE))
             }
-            correctPerson = savedInstanceState.getParcelable(EXTRA_CORRECT_PERSON)
+            correctPerson = savedInstanceState.getParcelable(
+                EXTRA_CORRECT_PERSON)
             if (!currentPeople.isEmpty()) {
                 stateRestored = true
                 showBoard()
@@ -94,7 +100,8 @@ class GameBoardPresenter
     override fun setUpNewBoard() {
         currentPeople.apply {
             clear()
-            addAll(listRandomizer.pickN(allPeople, MAX_PEOPLE))
+            addAll(listRandomizer.pickN(allPeople,
+                MAX_PEOPLE))
         }
         chosenPeople.clear()
         correctPerson = listRandomizer.pickOne(currentPeople)

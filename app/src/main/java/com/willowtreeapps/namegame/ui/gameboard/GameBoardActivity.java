@@ -1,10 +1,9 @@
-package com.willowtreeapps.namegame.ui;
+package com.willowtreeapps.namegame.ui.gameboard;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.willowtreeapps.namegame.R;
-import com.willowtreeapps.namegame.core.NameGameApplication;
 
 public class GameBoardActivity extends AppCompatActivity {
 

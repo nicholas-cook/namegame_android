@@ -1,4 +1,4 @@
-package com.willowtreeapps.namegame.ui
+package com.willowtreeapps.namegame.ui.gameboard
 
 import com.willowtreeapps.namegame.core.INameGameComponent
 import com.willowtreeapps.namegame.util.FragmentScoped
