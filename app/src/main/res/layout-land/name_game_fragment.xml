@@ -13,15 +13,48 @@
         android:textColor="@color/darkGray"
         android:textSize="22sp" />
 
-    <TextView
-        android:id="@+id/correct_incorrect"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/name_game_title_text_margin"
         android:layout_marginEnd="@dimen/name_game_title_text_margin"
-        android:layout_marginStart="@dimen/name_game_title_text_margin"
-        android:gravity="center_horizontal"
-        android:textSize="22sp" />
+        android:layout_marginStart="@dimen/name_game_title_text_margin">
+
+        <TextView
+            android:id="@+id/correct_incorrect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/name_game_title_text_margin"
+            android:layout_marginEnd="@dimen/name_game_title_text_margin"
+            android:layout_marginStart="@dimen/name_game_title_text_margin"
+            android:gravity="center_horizontal"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/correct_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="@dimen/name_game_title_text_margin"
+            android:layout_marginRight="@dimen/name_game_title_text_margin"
+            android:layout_marginStart="@dimen/name_game_title_text_margin"
+            android:layout_toLeftOf="@+id/incorrect_total"
+            android:layout_toStartOf="@+id/incorrect_total"
+            android:gravity="start"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/incorrect_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="@dimen/name_game_title_text_margin"
+            android:layout_marginRight="@dimen/name_game_title_text_margin"
+            android:gravity="end"
+            android:textSize="22sp" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/face_container"

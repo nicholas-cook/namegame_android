@@ -8,11 +8,15 @@ import com.willowtreeapps.namegame.util.IBaseView
 interface IGameBoardContract {
 
     interface View : IBaseView {
-        fun showPeople(people: ArrayList<Person>, fullName: String)
+        fun showPeople(people: List<Person>, fullName: String)
 
         fun showIncorrectAnswer(correctPerson: Person)
 
         fun showCorrectAnswer(correctPerson: Person)
+
+        fun updateCorrectTotal(correctTotal: Int)
+
+        fun updateIncorrectTotal(incorrectTotal: Int)
 
         fun showPeopleLoadError(@StringRes message: Int)
     }
@@ -20,6 +24,6 @@ interface IGameBoardContract {
     interface Presenter : IBasePresenter {
         fun onPictureClicked(person: Person)
 
-        fun setUpNewBoard()
+        fun prepAndDisplayBoard()
     }
 }

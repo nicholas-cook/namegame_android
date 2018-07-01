@@ -17,9 +17,11 @@ class GameBoardPresenter
     private var view: IGameBoardContract.View? = null
 
     private val allPeople = ArrayList<Person>()
-    private val currentPeople = ArrayList<Person>()
-    private val chosenPeople = ArrayList<Person>()
+    private val currentPeople = ArrayList<Person>(MAX_PEOPLE)
     private var correctPerson: Person? = null
+
+    private var correctTotal = 0
+    private var incorrectTotal = 0
 
     private var stateRestored = false
 
@@ -30,7 +32,8 @@ class GameBoardPresenter
                 addAll(people)
             }
             if (!stateRestored) {
-                setUpNewBoard()
+                resetPeopleValues()
+                prepAndDisplayBoard()
             }
         }
 
@@ -48,12 +51,15 @@ class GameBoardPresenter
     }
 
     override fun onPictureClicked(person: Person) {
-        correctPerson?.let {
+        correctPerson?.let { cp ->
             if (person.id == correctPerson?.id) {
-                this.view?.showCorrectAnswer(it)
+                correctTotal++
+                view?.showCorrectAnswer(cp)
             } else {
-                this.view?.showIncorrectAnswer(it)
+                incorrectTotal++
+                view?.showIncorrectAnswer(cp)
             }
+            resetPeopleValues()
         }
     }
 
@@ -67,12 +73,10 @@ class GameBoardPresenter
 
     override fun saveState(outState: Bundle) {
         outState.apply {
-            putParcelableArrayList(
-                EXTRA_CURRENT_PEOPLE, currentPeople)
-            putParcelableArrayList(
-                EXTRA_CHOSEN_PEOPLE, chosenPeople)
-            putParcelable(
-                EXTRA_CORRECT_PERSON, correctPerson)
+            putParcelableArrayList(EXTRA_CURRENT_PEOPLE, currentPeople)
+            putParcelable(EXTRA_CORRECT_PERSON, correctPerson)
+            putInt(EXTRA_CORRECT_TOTAL, correctTotal)
+            putInt(EXTRA_INCORRECT_TOTAL, incorrectTotal)
         }
     }
 
@@ -80,35 +84,27 @@ class GameBoardPresenter
         savedInstanceState?.let {
             currentPeople.apply {
                 clear()
-                addAll(savedInstanceState.getParcelableArrayList(
-                    EXTRA_CURRENT_PEOPLE))
+                addAll(it.getParcelableArrayList(EXTRA_CURRENT_PEOPLE))
             }
-            chosenPeople.apply {
-                clear()
-                addAll(savedInstanceState.getParcelableArrayList(
-                    EXTRA_CHOSEN_PEOPLE))
-            }
-            correctPerson = savedInstanceState.getParcelable(
-                EXTRA_CORRECT_PERSON)
+            correctPerson = it.getParcelable(EXTRA_CORRECT_PERSON)
+            correctTotal = it.getInt(EXTRA_CORRECT_TOTAL)
+            incorrectTotal = it.getInt(EXTRA_INCORRECT_TOTAL)
             if (!currentPeople.isEmpty()) {
                 stateRestored = true
-                showBoard()
+                prepAndDisplayBoard()
             }
         }
     }
 
-    override fun setUpNewBoard() {
+    private fun resetPeopleValues() {
         currentPeople.apply {
             clear()
-            addAll(listRandomizer.pickN(allPeople,
-                MAX_PEOPLE))
+            addAll(listRandomizer.pickN(allPeople, MAX_PEOPLE))
         }
-        chosenPeople.clear()
         correctPerson = listRandomizer.pickOne(currentPeople)
-        showBoard()
     }
 
-    private fun showBoard() {
+    override fun prepAndDisplayBoard() {
         var fullName: String? = ""
         if (!correctPerson?.firstName.isNullOrBlank() && !correctPerson?.lastName.isNullOrBlank()) {
             fullName = correctPerson?.firstName?.plus(" ")?.plus(correctPerson?.lastName)
@@ -117,13 +113,18 @@ class GameBoardPresenter
         } else if (!correctPerson?.lastName.isNullOrBlank()) {
             fullName = correctPerson?.lastName
         }
-        view?.showPeople(currentPeople, fullName ?: "")
+        view?.let {
+            it.showPeople(currentPeople, fullName ?: "")
+            it.updateCorrectTotal(correctTotal)
+            it.updateIncorrectTotal(incorrectTotal)
+        }
     }
 
     companion object {
-        private const val EXTRA_CURRENT_PEOPLE = "com.willowtreeapps.namegame.ui.EXTRA_CURRENT_PEOPLE"
-        private const val EXTRA_CHOSEN_PEOPLE = "com.willowtreeapps.namegame.ui.EXTRA_CHOSEN_PEOPLE"
-        private const val EXTRA_CORRECT_PERSON = "com.willowtreeapps.namegame.ui.EXTRA_CORRECT_PERSON"
+        private const val EXTRA_CURRENT_PEOPLE = "com.willowtreeapps.namegame.ui.gameboard.EXTRA_CURRENT_PEOPLE"
+        private const val EXTRA_CORRECT_PERSON = "com.willowtreeapps.namegame.ui.gameboard.EXTRA_CORRECT_PERSON"
+        private const val EXTRA_CORRECT_TOTAL = "com.willowtreeapps.namegame.ui.gameboard.EXTRA_CORRECT_TOTAL"
+        private const val EXTRA_INCORRECT_TOTAL = "com.willowtreeapps.namegame.ui.gameboard.EXTRA_INCORRECT_TOTAL"
 
         private const val MAX_PEOPLE = 5
     }

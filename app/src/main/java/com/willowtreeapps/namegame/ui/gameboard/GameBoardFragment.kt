@@ -56,6 +56,8 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         //Hide the views until data loads
         title.alpha = 0f
         correct_incorrect.alpha = 0f
+        correct_total.alpha = 0f
+        incorrect_total.alpha = 0f
 
         val n = face_container.childCount
         for (i in 0 until n) {
@@ -102,6 +104,8 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
     private fun animateFacesIn() {
         title.animate().alpha(1f).start()
         correct_incorrect.animate().alpha(0f).start()
+        correct_total.animate().alpha(1f).start()
+        incorrect_total.animate().alpha(1f).start()
         for (i in faces.indices) {
             val face = faces[i]
             face.animate().apply {
@@ -134,7 +138,7 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         super.onDestroy()
     }
 
-    override fun showPeople(people: ArrayList<Person>, fullName: String) {
+    override fun showPeople(people: List<Person>, fullName: String) {
         if (fullName.isEmpty()) {
             title.text = getString(R.string.question_no_name)
         } else {
@@ -144,12 +148,21 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         animateFacesIn()
     }
 
+    override fun updateCorrectTotal(correctTotal: Int) {
+        correct_total.text = getString(R.string.correct_total, correctTotal)
+    }
+
+    override fun updateIncorrectTotal(incorrectTotal: Int) {
+        incorrect_total.text = getString(R.string.incorrect_total, incorrectTotal)
+    }
+
     override fun showIncorrectAnswer(correctPerson: Person) {
         correct_incorrect.apply {
             animate().alpha(1f).start()
             setText(R.string.incorrect)
             setTextColor(getColor(R.color.alphaRed))
         }
+        hideCorrectIncorrectTotals()
         hideIncorrectAnswers(correctPerson)
     }
 
@@ -159,7 +172,13 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
             setText(R.string.correct)
             setTextColor(getColor(R.color.alphaGreen))
         }
+        hideCorrectIncorrectTotals()
         hideIncorrectAnswers(correctPerson)
+    }
+
+    private fun hideCorrectIncorrectTotals() {
+        correct_total.animate().alpha(0f)
+        incorrect_total.animate().alpha(0f)
     }
 
     @ColorInt
@@ -180,6 +199,7 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
                     start()
                 }
             } else {
+                //Longer delay to show user correct answer
                 face.animate().apply {
                     scaleX(0f)
                     scaleY(0f)
@@ -187,7 +207,7 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
                     interpolator = OVERSHOOT
                     start()
                 }
-                Handler().postDelayed({ presenter.setUpNewBoard() }, 3000)
+                Handler().postDelayed({ presenter.prepAndDisplayBoard() }, 3000)
             }
         }
     }
