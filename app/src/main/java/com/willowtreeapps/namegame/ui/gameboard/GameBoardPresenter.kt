@@ -51,13 +51,14 @@ class GameBoardPresenter
     }
 
     override fun onPictureClicked(person: Person) {
-        correctPerson?.let { cp ->
+        correctPerson?.let {
+            val correctPersonIndex = currentPeople.indexOf(it)
             if (person.id == correctPerson?.id) {
                 correctTotal++
-                view?.showCorrectAnswer(cp)
+                view?.showCorrectAnswer(correctPersonIndex)
             } else {
                 incorrectTotal++
-                view?.showIncorrectAnswer(cp)
+                view?.showIncorrectAnswer(correctPersonIndex)
             }
             resetPeopleValues()
         }
@@ -105,6 +106,14 @@ class GameBoardPresenter
     }
 
     override fun prepAndDisplayBoard() {
+        view?.let {
+            it.showPeople(currentPeople, getFullName())
+            it.updateCorrectTotal(correctTotal)
+            it.updateIncorrectTotal(incorrectTotal)
+        }
+    }
+
+    private fun getFullName(): String {
         var fullName: String? = ""
         if (!correctPerson?.firstName.isNullOrBlank() && !correctPerson?.lastName.isNullOrBlank()) {
             fullName = correctPerson?.firstName?.plus(" ")?.plus(correctPerson?.lastName)
@@ -113,11 +122,7 @@ class GameBoardPresenter
         } else if (!correctPerson?.lastName.isNullOrBlank()) {
             fullName = correctPerson?.lastName
         }
-        view?.let {
-            it.showPeople(currentPeople, fullName ?: "")
-            it.updateCorrectTotal(correctTotal)
-            it.updateIncorrectTotal(incorrectTotal)
-        }
+        return fullName ?: ""
     }
 
     companion object {

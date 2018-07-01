@@ -84,7 +84,6 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
             val face = faces[i]
             val person = people[i]
             face.setOnClickListener(getFaceClickListener(person))
-            face.tag = person
             picasso.load(PREFIX_HTTPS + person.headshot.url).apply {
                 placeholder(R.drawable.ic_face_white_48dp)
                 resize(imageSize, imageSize)
@@ -156,24 +155,24 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         incorrect_total.text = getString(R.string.incorrect_total, incorrectTotal)
     }
 
-    override fun showIncorrectAnswer(correctPerson: Person) {
+    override fun showIncorrectAnswer(correctPersonIndex: Int) {
         correct_incorrect.apply {
             animate().alpha(1f).start()
             setText(R.string.incorrect)
             setTextColor(getColor(R.color.alphaRed))
         }
         hideCorrectIncorrectTotals()
-        hideIncorrectAnswers(correctPerson)
+        hideIncorrectAnswers(correctPersonIndex)
     }
 
-    override fun showCorrectAnswer(correctPerson: Person) {
+    override fun showCorrectAnswer(correctPersonIndex: Int) {
         correct_incorrect.apply {
             animate().alpha(1f).start()
             setText(R.string.correct)
             setTextColor(getColor(R.color.alphaGreen))
         }
         hideCorrectIncorrectTotals()
-        hideIncorrectAnswers(correctPerson)
+        hideIncorrectAnswers(correctPersonIndex)
     }
 
     private fun hideCorrectIncorrectTotals() {
@@ -186,28 +185,30 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         return ContextCompat.getColor(activity!!, colorRes)
     }
 
-    private fun hideIncorrectAnswers(correctPerson: Person) {
+    private fun hideIncorrectAnswers(correctPersonIndex: Int) {
+        var timeMultiplier = 0
         for (i in faces.indices) {
             val face = faces[i]
             face.setOnClickListener(null)
-            if ((face.tag as Person).id != correctPerson.id) {
+            if (i != correctPersonIndex) {
                 face.animate().apply {
                     scaleX(0f)
                     scaleY(0f)
-                    startDelay = (800 + 120 * i).toLong()
+                    startDelay = 800L + 120L * timeMultiplier
                     interpolator = OVERSHOOT
                     start()
                 }
+                timeMultiplier++
             } else {
                 //Longer delay to show user correct answer
                 face.animate().apply {
                     scaleX(0f)
                     scaleY(0f)
-                    startDelay = 2500
+                    startDelay = CORRECT_PERSON_DELAY
                     interpolator = OVERSHOOT
                     start()
                 }
-                Handler().postDelayed({ presenter.prepAndDisplayBoard() }, 3000)
+                Handler().postDelayed({ presenter.prepAndDisplayBoard() }, NEW_BOARD_DELAY)
             }
         }
     }
@@ -217,8 +218,9 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
     }
 
     companion object {
-
         private val OVERSHOOT = OvershootInterpolator()
+        private const val CORRECT_PERSON_DELAY = 2500L
+        private const val NEW_BOARD_DELAY = 3000L
         private const val PREFIX_HTTPS = "https:"
     }
 }
