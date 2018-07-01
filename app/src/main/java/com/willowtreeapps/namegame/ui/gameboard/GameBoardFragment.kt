@@ -19,7 +19,7 @@ import com.willowtreeapps.namegame.core.NameGameApplication
 import com.willowtreeapps.namegame.network.api.model.Person
 import com.willowtreeapps.namegame.util.CircleBorderTransform
 import com.willowtreeapps.namegame.util.Ui
-import kotlinx.android.synthetic.main.name_game_fragment.*
+import kotlinx.android.synthetic.main.fragment_game_board.*
 import java.util.*
 import javax.inject.Inject
 
@@ -39,7 +39,7 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.name_game_fragment, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_game_board, container, false)
         presenter.attachView(this)
         return rootView
     }

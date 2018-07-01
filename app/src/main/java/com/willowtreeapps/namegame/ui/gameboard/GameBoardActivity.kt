@@ -9,7 +9,7 @@ class GameBoardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.name_game_activity)
+        setContentView(R.layout.activity_game_board)
         var gameBoardFragment = supportFragmentManager.findFragmentByTag(
             FRAG_TAG) as GameBoardFragment?
         if (gameBoardFragment == null) {
