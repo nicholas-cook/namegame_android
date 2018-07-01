@@ -73,6 +73,26 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         presenter.restoreState(savedInstanceState)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        presenter.saveState(outState)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenter.start()
+    }
+
+    override fun onStop() {
+        presenter.stop()
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        presenter.detachView()
+        super.onDestroy()
+    }
+
     /**
      * A method for setting the images from people into the imageviews
      */
@@ -117,26 +137,6 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        presenter.saveState(outState)
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        presenter.start()
-    }
-
-    override fun onStop() {
-        presenter.stop()
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        presenter.detachView()
-        super.onDestroy()
-    }
-
     override fun showPeople(people: List<Person>, fullName: String) {
         if (fullName.isEmpty()) {
             title.text = getString(R.string.question_no_name)
@@ -155,7 +155,7 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         incorrect_total.text = getString(R.string.incorrect_total, incorrectTotal)
     }
 
-    override fun showIncorrectAnswer(correctPersonIndex: Int) {
+    override fun onIncorrectAnswer(correctPersonIndex: Int) {
         correct_incorrect.apply {
             animate().alpha(1f).start()
             setText(R.string.incorrect)
@@ -165,7 +165,7 @@ class GameBoardFragment : Fragment(), IGameBoardContract.View {
         hideIncorrectAnswers(correctPersonIndex)
     }
 
-    override fun showCorrectAnswer(correctPersonIndex: Int) {
+    override fun onCorrectAnswer(correctPersonIndex: Int) {
         correct_incorrect.apply {
             animate().alpha(1f).start()
             setText(R.string.correct)

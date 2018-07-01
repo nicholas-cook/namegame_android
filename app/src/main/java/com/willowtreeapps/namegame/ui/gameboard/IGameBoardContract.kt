@@ -10,9 +10,9 @@ interface IGameBoardContract {
     interface View : IBaseView {
         fun showPeople(people: List<Person>, fullName: String)
 
-        fun showIncorrectAnswer(correctPersonIndex: Int)
+        fun onIncorrectAnswer(correctPersonIndex: Int)
 
-        fun showCorrectAnswer(correctPersonIndex: Int)
+        fun onCorrectAnswer(correctPersonIndex: Int)
 
         fun updateCorrectTotal(correctTotal: Int)
 

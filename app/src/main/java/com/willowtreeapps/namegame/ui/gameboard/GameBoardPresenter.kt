@@ -32,6 +32,7 @@ class GameBoardPresenter
                 addAll(people)
             }
             if (!stateRestored) {
+                stateRestored = true
                 resetPeopleValues()
                 prepAndDisplayBoard()
             }
@@ -48,20 +49,6 @@ class GameBoardPresenter
 
     override fun detachView() {
         view = null
-    }
-
-    override fun onPictureClicked(person: Person) {
-        correctPerson?.let {
-            val correctPersonIndex = currentPeople.indexOf(it)
-            if (person.id == correctPerson?.id) {
-                correctTotal++
-                view?.showCorrectAnswer(correctPersonIndex)
-            } else {
-                incorrectTotal++
-                view?.showIncorrectAnswer(correctPersonIndex)
-            }
-            resetPeopleValues()
-        }
     }
 
     override fun start() {
@@ -94,6 +81,20 @@ class GameBoardPresenter
                 stateRestored = true
                 prepAndDisplayBoard()
             }
+        }
+    }
+
+    override fun onPictureClicked(person: Person) {
+        correctPerson?.let {
+            val correctPersonIndex = currentPeople.indexOf(it)
+            if (person.id == correctPerson?.id) {
+                correctTotal++
+                view?.onCorrectAnswer(correctPersonIndex)
+            } else {
+                incorrectTotal++
+                view?.onIncorrectAnswer(correctPersonIndex)
+            }
+            resetPeopleValues()
         }
     }
 
