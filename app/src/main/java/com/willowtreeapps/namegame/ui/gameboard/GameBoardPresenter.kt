@@ -29,7 +29,11 @@ class GameBoardPresenter
         override fun onLoadFinished(people: MutableList<Person>) {
             allPeople.apply {
                 clear()
-                addAll(people)
+                //Don't show people without names or pictures
+                addAll(people.filter {
+                    !it.headshot.url.isNullOrBlank() &&
+                        (!it.firstName.isNullOrBlank() || !it.lastName.isNullOrBlank())
+                })
             }
             if (!stateRestored) {
                 stateRestored = true
